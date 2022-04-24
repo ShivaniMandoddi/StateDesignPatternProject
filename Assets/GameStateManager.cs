@@ -5,10 +5,20 @@ using UnityEngine.AI;
 public class GameStateManager : MonoBehaviour
 {
     // Start is called before the first frame update
+    public static GameStateManager instance;
+
     NavMeshAgent agent;
     Animator animator;
     public Transform player;
-    State currentState;
+    public State currentState;
+    private void Awake()
+    {
+        if(instance==null)
+        {
+            instance = new GameStateManager();
+        }
+          
+    }
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -20,6 +30,14 @@ public class GameStateManager : MonoBehaviour
     void Update()
     {
         currentState = currentState.Process();
+    }
+   
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Bullet")
+        {
+            currentState = new Death(this.gameObject, agent, animator, player);
+        }
     }
 }
 public class State
@@ -83,6 +101,7 @@ public class State
             return true;
         return false;
     }
+    
     
 }
 public class Idle: State
@@ -209,5 +228,6 @@ public class Death : State
 
 
 }
+
 
 
