@@ -208,6 +208,8 @@ public class Death : State
     public Death(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
     {
         stateName = STATE.DEATH;
+        agent.enabled = false;
+        
     }
     public override void Enter()
     {
@@ -222,7 +224,7 @@ public class Death : State
     }
     public override void Exit()
     {
-        animator.ResetTrigger("isShooting");
+        animator.ResetTrigger("isSleeping");
         base.Exit();
     }
 
