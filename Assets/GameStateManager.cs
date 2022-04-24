@@ -184,5 +184,30 @@ public class Attack : State
 
 
 }
+public class Death : State
+{
+    public Death(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
+    {
+        stateName = STATE.DEATH;
+    }
+    public override void Enter()
+    {
+        animator.SetTrigger("isSleeping");
+        base.Enter();
+
+    }
+    public override void Update()
+    {
+        
+       
+    }
+    public override void Exit()
+    {
+        animator.ResetTrigger("isShooting");
+        base.Exit();
+    }
+
+
+}
 
 
