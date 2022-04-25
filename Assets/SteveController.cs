@@ -43,10 +43,15 @@ public class SteveController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))                 // Firing 
         {
             animator.SetTrigger("IsFiring");
-            GameObject temp=Instantiate(bulletPrefab, bulletPoint.position, transform.rotation);
-            rb = temp.GetComponent<Rigidbody>();
-            rb.velocity = transform.forward * bulletSpeed;
+            // GameObject temp=Instantiate(bulletPrefab, bulletPoint.position, transform.rotation);
+            GameObject temp = GameManager.Instance.GetFromPool("Bullet");
+            if (temp != null)
+            {
+                temp.SetActive(true);
+                rb = temp.GetComponent<Rigidbody>();
+                rb.velocity = transform.forward * bulletSpeed;
 
+            }
         }
         if(Input.GetKeyDown(KeyCode.R))
         {

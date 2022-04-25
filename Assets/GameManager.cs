@@ -4,17 +4,25 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    private static GameManager instance;
+    public static GameManager Instance { get { return instance; } }
+    public List<PoolObject> poolItems = new List<PoolObject>();
+    private List<GameObject> pool = new List<GameObject>();
+    public List<GameObject> Pool { get { return pool; } }
+   
+    
     private void Awake()
     {
         if(instance==null)
         {
-            instance = new GameManager();
+            instance =this;
         }
     }
+   
     void Start()
     {
-        
+        //CreatePool();
+        AddToPool();
     }
 
     // Update is called once per frame
@@ -22,4 +30,34 @@ public class GameManager : MonoBehaviour
     {
         
     }
+    public void AddToPool()
+    {
+        foreach (PoolObject item in poolItems)
+        {
+            for(int i=0;i<item.amount;i++)
+            {
+                GameObject temp = Instantiate(item.prefab);
+                pool.Add(temp);
+                temp.SetActive(false);
+            }
+        }
+    }
+    public GameObject GetFromPool(string tagName)
+    {
+        foreach (GameObject item in pool)
+        {
+            if(tagName==item.tag && !item.activeInHierarchy)
+            {
+                return (item);
+            }
+        }
+        return null;
+    }
+}
+[System.Serializable]
+public class PoolObject
+{
+    public GameObject prefab;
+    public int amount;
+
 }

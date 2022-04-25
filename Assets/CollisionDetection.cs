@@ -8,7 +8,7 @@ public class CollisionDetection : MonoBehaviour
     {
         if(collision.gameObject.tag=="Enemy")
         {
-
+          
         }
     }
 }
