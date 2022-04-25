@@ -23,6 +23,10 @@ public class GameStateManager : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        }
         currentState = new Idle(this.gameObject, agent, animator, player);
     }
 
@@ -30,12 +34,15 @@ public class GameStateManager : MonoBehaviour
     void Update()
     {
         currentState = currentState.Process();
+        
     }
    
+  
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Bullet")
-        {
+        { 
+            other.gameObject.SetActive(false);
             currentState = new Death(this.gameObject, agent, animator, player);
         }
     }

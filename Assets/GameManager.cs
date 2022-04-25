@@ -37,8 +37,9 @@ public class GameManager : MonoBehaviour
             for(int i=0;i<item.amount;i++)
             {
                 GameObject temp = Instantiate(item.prefab);
-                pool.Add(temp);
                 temp.SetActive(false);
+                pool.Add(temp);
+                
             }
         }
     }

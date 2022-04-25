@@ -13,6 +13,7 @@ public class SteveController : MonoBehaviour
     public GameObject bulletPrefab;
     Rigidbody rb;
     public float bulletSpeed;
+    float time;
     void Start()
     {
         
@@ -47,6 +48,8 @@ public class SteveController : MonoBehaviour
             GameObject temp = GameManager.Instance.GetFromPool("Bullet");
             if (temp != null)
             {
+                temp.transform.position = bulletPoint.position;
+                temp.transform.rotation = transform.rotation;
                 temp.SetActive(true);
                 rb = temp.GetComponent<Rigidbody>();
                 rb.velocity = transform.forward * bulletSpeed;
@@ -58,6 +61,23 @@ public class SteveController : MonoBehaviour
             animator.SetTrigger("IsReload");
         }
 
+        time = time + Time.deltaTime;
+        if (time > 8f)
+        {
+            GameObject temp = GameManager.Instance.GetFromPool("Enemy");
+            if (temp != null)
+            {
+                temp.SetActive(true);
+                temp.transform.position = GetPosition();
+
+            }
+            time = 0f;
+        }
+
+    }
+    public Vector3 GetPosition()
+    {
+         return (new Vector3(Random.Range(2f, 50f), 0f, Random.Range(5f, 50f)));
     }
     public void Walk()
     {
