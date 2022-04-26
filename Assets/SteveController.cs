@@ -14,6 +14,7 @@ public class SteveController : MonoBehaviour
     Rigidbody rb;
     public float bulletSpeed;
     float time;
+    public GameObject bulletSmoke;
     void Start()
     {
         
@@ -44,6 +45,10 @@ public class SteveController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))                 // Firing 
         {
             animator.SetTrigger("IsFiring");
+            Instantiate(bulletSmoke, bulletPoint.position, Quaternion.identity);
+            //bulletSmoke.transform.position = bulletPoint.position;
+            
+          
             // GameObject temp=Instantiate(bulletPrefab, bulletPoint.position, transform.rotation);
             GameObject temp = GameManager.Instance.GetFromPool("Bullet");
             if (temp != null)
@@ -55,6 +60,7 @@ public class SteveController : MonoBehaviour
                 rb.velocity = transform.forward * bulletSpeed;
 
             }
+            
         }
         if(Input.GetKeyDown(KeyCode.R))
         {
@@ -62,7 +68,7 @@ public class SteveController : MonoBehaviour
         }
 
         time = time + Time.deltaTime;
-        if (time > 8f)
+        if (time > 5f)           
         {
             GameObject temp = GameManager.Instance.GetFromPool("Enemy");
             if (temp != null)

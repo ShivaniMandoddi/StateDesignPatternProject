@@ -15,7 +15,7 @@ public class GameStateManager : MonoBehaviour
     {
         if(instance==null)
         {
-            instance = new GameStateManager();
+            instance = this;
         }
           
     }
@@ -27,12 +27,18 @@ public class GameStateManager : MonoBehaviour
         {
             player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         }
+        agent.enabled = true;
+        
         currentState = new Idle(this.gameObject, agent, animator, player);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        }
         currentState = currentState.Process();
         
     }
@@ -43,7 +49,9 @@ public class GameStateManager : MonoBehaviour
         if (other.gameObject.tag == "Bullet")
         { 
             other.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
             currentState = new Death(this.gameObject, agent, animator, player);
+
         }
     }
 }
@@ -51,7 +59,7 @@ public class State
 {
     public enum STATE
     {
-        ATTACK, CHASE, IDLE, DEATH
+        ATTACK, CHASE, IDLE, DEATH, WONDER
     }
     public enum EVENTS
     {
@@ -116,6 +124,7 @@ public class Idle: State
     public Idle(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
     {
         stateName = STATE.IDLE;
+        agent.enabled = true;
     }
     public override void Enter()
     {
@@ -130,7 +139,11 @@ public class Idle: State
             nextState = new Chase(nPC, agent, animator, playerPosition);
             eventStage = EVENTS.EXIT;
         }
-       
+        else
+        {
+            nextState = new Wonder(nPC, agent, animator, playerPosition);
+            eventStage = EVENTS.EXIT;
+        }
         // base.Update();
     }
     public override void Exit()
@@ -140,6 +153,38 @@ public class Idle: State
     }
 
 
+}
+public class Wonder: State
+{
+    public Wonder(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
+    {
+        stateName = STATE.WONDER;
+        
+    }
+    public override void Enter()
+    {
+        animator.SetTrigger("isWalking");
+        base.Enter();
+
+    }
+    public override void Update()
+    {
+        float randValueX = nPC.transform.position.x + Random.Range(-5f, 5f);
+        float randValueZ = nPC.transform.position.z + Random.Range(-5f, 5f);
+        float ValueY = Terrain.activeTerrain.SampleHeight(new Vector3(randValueX, 0f, randValueZ));
+        Vector3 destination = new Vector3(randValueX, ValueY, randValueZ);
+        if (CanSeePlayer())
+        {
+            nextState = new Chase(nPC, agent, animator, playerPosition);
+            eventStage = EVENTS.EXIT;
+        }
+        // base.Update();
+    }
+    public override void Exit()
+    {
+        animator.ResetTrigger("isWalking");
+        base.Exit();
+    }
 }
 public class Chase : State
 {
@@ -151,18 +196,18 @@ public class Chase : State
     }
     public override void Enter()
     {
-        animator.SetTrigger("isWalking");
+        animator.SetTrigger("isRunning");
         base.Enter();
 
     }
     public override void Update()
     {
         agent.SetDestination(playerPosition.position);
-        
+        nPC.transform.LookAt(playerPosition.position);
       
         if (!CanSeePlayer())
         {
-            nextState = new Idle(nPC, agent, animator, playerPosition);
+            nextState = new Wonder(nPC, agent, animator, playerPosition);
             eventStage = EVENTS.EXIT;
         }
         if (Vector3.Distance(nPC.transform.position,playerPosition.position)<=agent.stoppingDistance)
@@ -175,7 +220,7 @@ public class Chase : State
     }
     public override void Exit()
     {
-        animator.ResetTrigger("isWalking");
+        animator.ResetTrigger("isRunning");
         base.Exit();
     }
 
@@ -186,6 +231,7 @@ public class Attack : State
     public Attack(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
     {
         stateName = STATE.ATTACK;
+        nPC.transform.LookAt(playerPosition.position);
     }
     public override void Enter()
     {
@@ -212,10 +258,11 @@ public class Attack : State
 }
 public class Death : State
 {
+    float time;
     public Death(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition) : base(_npc, _agent, _animator, _playerPosition)
     {
         stateName = STATE.DEATH;
-        agent.enabled = false;
+       agent.enabled = false;
         
     }
     public override void Enter()
@@ -226,13 +273,22 @@ public class Death : State
     }
     public override void Update()
     {
+         time = time + Time.deltaTime;
+         if(time>5f)
+         {
+             agent.enabled = true;
+            nextState = new Idle(nPC, agent, animator, playerPosition);
+            nPC.SetActive(false);
+            eventStage = EVENTS.EXIT;
+        }
         
-       
+
     }
     public override void Exit()
     {
         animator.ResetTrigger("isSleeping");
-        base.Exit();
+        
+         base.Exit();
     }
 
 

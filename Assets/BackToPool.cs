@@ -6,6 +6,7 @@ public class BackToPool : MonoBehaviour
 {
     // Start is called before the first frame update
     float time;
+    public float destroyingTime;
     void Start()
     {
         
@@ -15,7 +16,7 @@ public class BackToPool : MonoBehaviour
     void Update()
     {
         time = time + Time.deltaTime;
-        if(time>10f)
+        if(time>destroyingTime)
         {
             this.gameObject.SetActive(false);
             time = 0f;
