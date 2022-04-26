@@ -2617,6 +2617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  bloodEffect: {fileID: 705597805710053848, guid: d8602b7c81321de458b8c6fc46fa914d, type: 3}
 --- !u!114 &2095346349927427265
 MonoBehaviour:
   m_ObjectHideFlags: 0

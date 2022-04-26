@@ -11,6 +11,7 @@ public class GameStateManager : MonoBehaviour
     Animator animator;
     public Transform player;
     public State currentState;
+    public GameObject bloodEffect;
     private void Awake()
     {
         if(instance==null)
@@ -47,7 +48,9 @@ public class GameStateManager : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Bullet")
-        { 
+        {
+            //bloodEffect.transform.position = other.gameObject.transform.position;
+            Instantiate(bloodEffect, other.gameObject.transform.position, Quaternion.identity);
             other.gameObject.SetActive(false);
             //this.gameObject.SetActive(false);
             currentState = new Death(this.gameObject, agent, animator, player);
@@ -73,6 +76,7 @@ public class State
     public Animator animator;
     public Transform playerPosition;
     public State nextState;
+  
     public State(GameObject _npc, NavMeshAgent _agent, Animator _animator, Transform _playerPosition)
     {
         this.nPC = _npc;
